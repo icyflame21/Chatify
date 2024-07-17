@@ -27,4 +27,4 @@ yarn-error.log*
 
 # Custom files #
 ################
-/src/config.js
+# /src/config.js
