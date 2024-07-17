@@ -1,0 +1,13 @@
+{
+  "short_name": "OmniFood",
+  "name": "OmniFood",
+  "icons": [
+    {
+      "src": "omnifood-logo.png",
+      "type": "image/x-icon"
+    }
+  ],
+  "display": "standalone",
+  "theme_color": "#2c7be5",
+  "background_color": "#cf711f4f"
+}

@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+		<!--	created with www.mysitemapgenerator.com	-->
+		<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+	<loc>https://omnifood.in/</loc>
+	<lastmod>2023-07-18T11:46:35+01:00</lastmod>
+	<priority>0.6</priority>
+</url>
+<url>
+	<loc>https://omnifood.in/404</loc>
+	<lastmod>2023-07-18T11:46:35+01:00</lastmod>
+	<priority>1.0</priority>
+</url>
+<url>
+	<loc>https://omnifood.in/401</loc>
+	<lastmod>2023-07-18T11:46:35+01:00</lastmod>
+	<priority>1.0</priority>
+</url>
+<url>
+	<loc>https://omnifood.in/dashboard</loc>
+	<lastmod>2023-07-18T11:46:35+01:00</lastmod>
+	<priority>1.0</priority>
+</url>
+<url>
+	<loc>https://omnifood.in/all_bookmarks</loc>
+	<lastmod>2023-07-18T11:46:35+01:00</lastmod>
+	<priority>1.0</priority>
+</url>
+<url>
+	<loc>https://omnifood.in/settings</loc>
+	<lastmod>2023-07-18T11:46:35+01:00</lastmod>
+	<priority>1.0</priority>
+</url>
+<url>
+	<loc>https://omnifood.in/createRecipe</loc>
+	<lastmod>2023-07-18T11:46:35+01:00</lastmod>
+	<priority>1.0</priority>
+</url>
+<url>
+	<loc>https://omnifood.in/login</loc>
+	<lastmod>2023-07-18T11:46:35+01:00</lastmod>
+	<priority>1.0</priority>
+</url>
+<url>
+	<loc>https://omnifood.in/register</loc>
+	<lastmod>2023-07-18T11:46:35+01:00</lastmod>
+	<priority>1.0</priority>
+</url>
+<url>
+	<loc>https://omnifood.in/forgot-password</loc>
+	<lastmod>2023-07-18T11:46:35+01:00</lastmod>
+	<priority>1.0</priority>
+</url>
+</urlset>
