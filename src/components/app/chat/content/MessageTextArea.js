@@ -1,9 +1,8 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classNames from 'classnames';
 import Picker from '@emoji-mart/react';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Button, Form, Spinner } from 'react-bootstrap';
-import TextareaAutosize from 'react-textarea-autosize';
 import AppContext from 'context/Context';
 import { ChatContext } from 'context/ChatProvider';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
@@ -11,14 +10,15 @@ import './MessageTextArea.css';
 import { firestore } from 'config';
 import { showToast } from 'helpers/toast';
 import { getAdminDoc } from 'helpers/query';
-
+import 'react-quill/dist/quill.snow.css';
+import ReactQuill from 'react-quill';
 
 const MessageTextArea = () => {
   const { handleScrollToBottom, isOpenThreadInfo, isSending, handleIsSending } = useContext(ChatContext);
-
   const [previewEmoji, setPreviewEmoji] = useState(false);
   const [message, setMessage] = useState('');
   const { config: { isDark }, userInfo } = useContext(AppContext);
+  const quillRef = useRef(null);
 
   const addEmoji = (e) => {
     let emoji = e.native;
@@ -35,7 +35,6 @@ const MessageTextArea = () => {
     try {
       const getAdmin = await getAdminDoc("User-Data", userInfo?.chat_group_options?.token_id);
       const token_id = userInfo?.chat_group_options?.token_id;
-      console.log("gewall", getAdmin);
 
       if (!getAdmin?.chat_group_options?.isLogout) {
         await addDoc(collection(firestore, token_id), {
@@ -49,6 +48,7 @@ const MessageTextArea = () => {
         });
 
         setMessage('');
+        quillRef.current.getEditor().setText('');
         handleScrollToBottom(true);
       } else {
         showToast('Failed to send message. Admin is not online.', 'info');
@@ -65,20 +65,20 @@ const MessageTextArea = () => {
     if (isOpenThreadInfo) {
       setPreviewEmoji(false);
     }
-
   }, [isOpenThreadInfo]);
 
   return (
     <Form className="chat-editor-area" onSubmit={handleSubmit}>
-      <TextareaAutosize
-        minRows={1}
-        maxRows={6}
+      <ReactQuill
+        ref={quillRef}
+        theme="snow"
         value={message}
+        onChange={setMessage}
         placeholder="Type your message"
-        onChange={({ target }) => setMessage(target.value)}
-        className="form-control outline-none resize-none rounded-0 border-0"
+        className='w-100  outline-none'
+        modules={{ toolbar: false }}
+        bounds='.chat-editor-area'
       />
-
       <Button
         variant="link"
         className="emoji-icon"
@@ -86,9 +86,8 @@ const MessageTextArea = () => {
       >
         <FontAwesomeIcon icon={['far', 'laugh-beam']} />
       </Button>
-
       {previewEmoji && (
-        <div className="chat-emoji-picker" >
+        <div className="chat-emoji-picker">
           <Picker
             set="apple"
             onEmojiSelect={addEmoji}
@@ -98,7 +97,6 @@ const MessageTextArea = () => {
           />
         </div>
       )}
-
       <Button
         variant="send"
         disabled={isSending}

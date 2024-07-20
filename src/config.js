@@ -29,7 +29,6 @@ export { auth, firestore };
 
 export const version = '4.2.0';
 export const settings = {
-    isRTL: false,
     isDark: false,
     showBurgerMenu: false, // controls showing vertical nav on mobile
 };

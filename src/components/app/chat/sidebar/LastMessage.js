@@ -6,10 +6,9 @@ const LastMessage = ({ lastMessage }) => {
     return (
       <div
         className="chat-contact-content"
-        dangerouslySetInnerHTML={{
-          __html: `${lastMessage?.createdBy}: ${lastMassagePreview}`
-        }}
-      />
+      >
+        {`${lastMessage?.createdBy}: ${lastMassagePreview}`}
+      </div>
     );
   }
 

@@ -12,7 +12,6 @@ const ChatContentBody = ({ thread }) => {
 
   const { scrollToBottom, handleScrollToBottom, chatMessages } = useContext(ChatContext);
 
-  console.log("chatMessages", chatMessages);
   useEffect(() => {
     if (scrollToBottom) {
       setTimeout(() => {
