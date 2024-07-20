@@ -35,7 +35,7 @@ const ChatTab = () => {
     }
     document.title = "Chatify | Social";
 
-  }, [userInfo?.chat_group_options?.token_id]);
+  }, []);
   
   return (
     <Tab.Container

@@ -2,7 +2,7 @@ import { Slide, toast } from 'react-toastify';
 
 const defaultOptions = {
     position: "top-center",
-    autoClose: 4000,
+    autoClose: 3000,
     hideProgressBar: false,
     closeOnClick: true,
     pauseOnHover: true,
@@ -10,7 +10,7 @@ const defaultOptions = {
     transition: Slide,
     theme: 'colored',
     icon: false,
-    className: 'w-auto gap-4',
+    className: 'w-auto gap-3',
 };
 
 export const showToast = (message, type) => {

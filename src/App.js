@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import 'react-toastify/dist/ReactToastify.min.css';
 import './App.css';
 import { onAuthStateChanged } from "firebase/auth";
@@ -12,6 +12,8 @@ import { Col, Row, Spinner } from 'react-bootstrap';
 
 const App = () => {
   const { handleUserInfo, userInfo, loading, handleLoading } = useContext(AppContext);
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
+
   useEffect(() => {
     const handleAuthStateChange = (user) => {
       handleLoading(true);
@@ -24,16 +26,19 @@ const App = () => {
             handleUserInfo({});
           }
           handleLoading(false);
+          setIsAuthChecked(true);
         }, (error) => {
           console.error("Error listening to Firestore changes: ", error);
           handleUserInfo({});
           handleLoading(false);
+          setIsAuthChecked(true);
         });
 
         return unsubscribe;
       } else {
         handleUserInfo({});
         handleLoading(false);
+        setIsAuthChecked(true);
       }
     };
 
@@ -49,13 +54,15 @@ const App = () => {
           <Spinner animation="border" variant="success" />
         </Col>
       </Row>
-    ) : Object.keys(userInfo).length > 0 ? (
-      <DashboardLayout />
-    ) : (
-      <LoginProvider>
-        <AuthenticatedLayout />
-      </LoginProvider>
-    )
+    ) : isAuthChecked ? (
+      Object.keys(userInfo).length > 0 ? (
+        <DashboardLayout />
+      ) : (
+        <LoginProvider>
+          <AuthenticatedLayout />
+        </LoginProvider>
+      )
+    ) : null // or a placeholder if needed
   );
 };
 

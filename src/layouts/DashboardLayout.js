@@ -9,6 +9,7 @@ import Profile from 'components/app/profile/Profile';
 import Chat from 'components/app/chat/Chat';
 
 const DashboardLayout = () => {
+
   useEffect(() => {
     const HTMLClassList = document.getElementsByTagName('html')[0].classList;
 
@@ -28,11 +29,12 @@ const DashboardLayout = () => {
     };
   }, []);
 
+
   return (
     <Routes>
       <Route element={<MainLayout />}>
+        <Route path="/social" element={<Chat />} />
         <Route path="/" element={<Landing />} />
-        <Route path="/social" element={<Chat />} /> 
         <Route path="/profile" element={<Profile />} />
       </Route>
       <Route element={<ErrorLayout />}>

@@ -36,6 +36,15 @@ const ConnectToken = () => {
       const AdminRef = doc(firestore, "User-Data", getAdmin?.uid);
       const currentUserRef = doc(firestore, "User-Data", userInfo?.uid);
 
+      const common_chat_group_options = {
+        group_image: getAdmin?.chat_group_options.group_image,
+        group_heading: getAdmin?.chat_group_options.group_heading,
+        group_name: getAdmin?.chat_group_options.group_name,
+        isLogout: false,
+        admin_uid: getAdmin?.uid,
+        token_id: formData.token
+      }
+
       if (getAdmin && getAdmin?.chat_group_options?.token_id === formData.token) {
         if (getAdmin?.uid === userInfo.uid) {
           common_member_obj = {
@@ -57,22 +66,24 @@ const ConnectToken = () => {
         await updateDoc(AdminRef, {
           members_history: arrayUnion(common_member_obj)
         });
-
+        let payload = {}
         if (getAdmin?.uid !== userInfo?.uid) {
-          const payload = {
+          payload = {
             chat_group_options: {
-              group_image: getAdmin?.chat_group_options.group_image,
-              group_heading: getAdmin?.chat_group_options.group_heading,
-              group_name: getAdmin?.chat_group_options.group_name,
-              isLogout: false,
+              ...common_chat_group_options,
               isAdmin: false,
-              admin_uid: getAdmin?.uid,
-              token_id: formData.token
             }
           };
-          await updateDoc(currentUserRef, payload);
+        } else {
+          payload = {
+            chat_group_options: {
+              ...common_chat_group_options,
+              isAdmin: true,
+            }
+          };
         }
-       
+        await updateDoc(currentUserRef, payload);
+
         showToast('Token successfully connected', 'success');
         navigate('/social')
       } else {

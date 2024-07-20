@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Dropdown } from 'react-bootstrap';
 import Avatar from 'components/common/Avatar';
 import { signOut } from "firebase/auth"
@@ -17,7 +17,7 @@ const ProfileDropdown = () => {
     handleUserInfo,
     loading
   } = useContext(AppContext);
-
+  const navigate = useNavigate()
   const handleLogOut = async () => {
     const getAdmin = await getAdminDoc("User-Data", userInfo?.chat_group_options?.token_id);
     const currentUserRef = doc(firestore, "User-Data", userInfo?.uid);
@@ -28,8 +28,7 @@ const ProfileDropdown = () => {
           group_heading: userInfo?.chat_group_options.group_heading,
           group_name: userInfo?.chat_group_options.group_name,
           isLogout: true,
-          isAdmin: false,
-          admin_uid: userInfo?.uid,
+          isAdmin: true,
           token_id: userInfo?.chat_group_options.token_id
         }
       };
@@ -38,6 +37,7 @@ const ProfileDropdown = () => {
     signOut(auth).then(() => {
       showToast('Logged out successfully', 'success');
       handleUserInfo({})
+      navigate('/')
     }).catch((error) => {
       showToast(`${error.message}`, 'danger');
     });

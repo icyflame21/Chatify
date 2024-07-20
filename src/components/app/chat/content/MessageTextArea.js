@@ -10,10 +10,11 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import './MessageTextArea.css';
 import { firestore } from 'config';
 import { showToast } from 'helpers/toast';
+import { getAdminDoc } from 'helpers/query';
 
 
 const MessageTextArea = () => {
-  const { handleScrollToBottom, isOpenThreadInfo, chatHistory, isSending, handleIsSending } = useContext(ChatContext);
+  const { handleScrollToBottom, isOpenThreadInfo, isSending, handleIsSending } = useContext(ChatContext);
 
   const [previewEmoji, setPreviewEmoji] = useState(false);
   const [message, setMessage] = useState('');
@@ -32,10 +33,11 @@ const MessageTextArea = () => {
     handleIsSending(true);
 
     try {
+      const getAdmin = await getAdminDoc("User-Data", userInfo?.chat_group_options?.token_id);
       const token_id = userInfo?.chat_group_options?.token_id;
-      const chatgroupOptions = chatHistory.data && chatHistory.data[0]?.chat_group_options?.isLogout;
+      console.log("gewall", getAdmin);
 
-      if (!chatgroupOptions.isLogout) {
+      if (!getAdmin?.chat_group_options?.isLogout) {
         await addDoc(collection(firestore, token_id), {
           message,
           createdAt: serverTimestamp(),
