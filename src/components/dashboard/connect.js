@@ -41,7 +41,6 @@ const ConnectToken = () => {
         group_heading: getAdmin?.chat_group_options.group_heading,
         group_name: getAdmin?.chat_group_options.group_name,
         isLogout: false,
-        admin_uid: getAdmin?.uid,
         token_id: formData.token
       }
 
@@ -71,6 +70,7 @@ const ConnectToken = () => {
           payload = {
             chat_group_options: {
               ...common_chat_group_options,
+              admin_uid: getAdmin?.uid,
               isAdmin: false,
             }
           };
@@ -78,6 +78,7 @@ const ConnectToken = () => {
           payload = {
             chat_group_options: {
               ...common_chat_group_options,
+              admin_uid: "",
               isAdmin: true,
             }
           };

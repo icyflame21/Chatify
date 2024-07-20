@@ -1,10 +1,11 @@
 import React from 'react';
-import { Card } from 'react-bootstrap';
+import { Button, Card } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Link } from 'react-router-dom';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
 
 const Error404 = () => {
+  const navigate = useNavigate()
   return (
     <>
       <Card className="text-center">
@@ -22,10 +23,10 @@ const Error404 = () => {
             </a>
             .
           </p>
-          <Link className="btn btn-primary btn-sm mt-3" to={'/'}>
+          <Button className="btn-sm mt-3" onClick={() => navigate(-1)}>
             <FontAwesomeIcon icon={faHome} className="me-2" />
             Take me home
-          </Link>
+          </Button>
         </Card.Body>
       </Card>
     </>

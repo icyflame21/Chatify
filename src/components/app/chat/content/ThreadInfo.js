@@ -47,6 +47,7 @@ const ThreadInfo = ({ thread }) => {
             <div className="title">
               <Button
                 variant="link"
+                aria-expanded={isOpenMemberCollapse}
                 className="btn-accordion hover-text-decoration-none dropdown-indicator w-100"
                 onClick={() =>
                   setIsOpenMemberCollapse(!isOpenMemberCollapse)
