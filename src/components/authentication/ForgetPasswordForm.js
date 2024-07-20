@@ -7,6 +7,7 @@ import Flex from 'components/common/Flex';
 import { sendPasswordResetEmail } from "firebase/auth";
 import { LoginContext } from 'context/LoginProvider';
 import { useNavigate } from 'react-router-dom';
+import { showToast } from 'helpers/toast';
 
 const ForgetPasswordForm = () => {
   const {
@@ -21,19 +22,15 @@ const ForgetPasswordForm = () => {
   const onSubmit = data => {
     handleLoginLoading(true)
     sendPasswordResetEmail(auth, data.email)
-      .then((data) => {
+      .then(() => {
         navigate('/')
         handleLoginLoading(false)
         reset()
-        toast.success(`Password reset email sent!`, {
-          theme: 'colored'
-        });
+        showToast('Password reset email sent!', 'success');
       })
       .catch((error) => {
         handleLoginLoading(false)
-        toast.error(`${error.message}`, {
-          theme: 'colored'
-        });
+        showToast(`${error.message}`, 'danger');
       });
   };
 

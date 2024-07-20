@@ -3,9 +3,9 @@ import { isIterableArray } from 'helpers/utils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Flex from './Flex';
 import classNames from 'classnames';
-import src1 from 'assets/img/illustrations/11.jpg'
-import src2 from 'assets/img/illustrations/15.jpg'
-import src3 from 'assets/img/illustrations/5.jpg'
+import src1 from 'assets/img/11.jpg'
+import src2 from 'assets/img/15.jpg'
+import src3 from 'assets/img/5.jpg'
 
 const Avatar = ({
   size,
@@ -27,6 +27,7 @@ const Avatar = ({
   const getAvatar = () => {
     if (src) {
       if (isIterableArray(src)) {
+        
         return (
           <div className={`${mediaClasses} overflow-hidden h-100 d-flex`}>
             <div className="w-50 border-right">

@@ -4,9 +4,12 @@ import { Dropdown } from 'react-bootstrap';
 import Avatar from 'components/common/Avatar';
 import { signOut } from "firebase/auth"
 import { auth } from 'config'
-import { toast } from 'react-toastify';
 import AppContext from 'context/Context';
-import DefaultProfile from 'assets/img/illustrations/avatar.png'
+import DefaultProfile from 'assets/img/avatar.png'
+import { showToast } from 'helpers/toast';
+import { getAdminDoc } from 'helpers/query';
+import { doc, updateDoc } from 'firebase/firestore';
+import { firestore } from 'config';
 
 const ProfileDropdown = () => {
   const {
@@ -15,16 +18,28 @@ const ProfileDropdown = () => {
     loading
   } = useContext(AppContext);
 
-  const handleLogOut = () => {
+  const handleLogOut = async () => {
+    const getAdmin = await getAdminDoc("User-Data", userInfo?.chat_group_options?.token_id);
+    const currentUserRef = doc(firestore, "User-Data", userInfo?.uid);
+    if (getAdmin?.uid == userInfo?.uid) {
+      const payload = {
+        chat_group_options: {
+          group_image: userInfo?.chat_group_options.group_image,
+          group_heading: userInfo?.chat_group_options.group_heading,
+          group_name: userInfo?.chat_group_options.group_name,
+          isLogout: true,
+          isAdmin: false,
+          admin_uid: userInfo?.uid,
+          token_id: userInfo?.chat_group_options.token_id
+        }
+      };
+      await updateDoc(currentUserRef, payload);
+    }
     signOut(auth).then(() => {
-      toast.success(`Logged out successfully`, {
-        theme: 'colored'
-      });
+      showToast('Logged out successfully', 'success');
       handleUserInfo({})
     }).catch((error) => {
-      toast.error(`${error.message}`, {
-        theme: 'colored'
-      });
+      showToast(`${error.message}`, 'danger');
     });
   }
 

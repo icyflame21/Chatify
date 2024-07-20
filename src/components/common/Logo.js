@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import AppContext from 'context/Context';
-import chatify from "assets/img/illustrations/chatify.png"
+import chatify from "assets/img/chatify.png"
 
 const Logo = ({ at, width, className, textClass, ...rest }) => {
 

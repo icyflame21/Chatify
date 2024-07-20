@@ -1,20 +1,18 @@
 import React from 'react';
 
 const LastMessage = ({ lastMessage }) => {
-  const lastMassagePreview = lastMessage?.message.split('<br>');
-
   if (lastMessage) {
+    const lastMassagePreview = lastMessage?.message.split('<br>');
     return (
       <div
         className="chat-contact-content"
         dangerouslySetInnerHTML={{
-          __html: `${name[0]}: ${lastMassagePreview}`
+          __html: `${lastMessage?.createdBy}: ${lastMassagePreview}`
         }}
       />
     );
   }
 
 };
-
 
 export default LastMessage;

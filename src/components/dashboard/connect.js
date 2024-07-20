@@ -1,17 +1,19 @@
 import FalconCardHeader from 'components/common/FalconCardHeader';
 import { firestore } from 'config';
 import AppContext from 'context/Context';
-import { arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import { getAdminDoc } from 'helpers/query';
 import { showToast } from 'helpers/toast';
 import React, { useContext, useState } from 'react';
 import { Button, Card, Form, FormControl, InputGroup, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 import { MdOutlineContentCopy } from "react-icons/md";
 import './connectToken.css';
-const ConnectToken = () => {
-  const { userInfo, handleUserInfo } = useContext(AppContext);
-  const token_id = userInfo?.chat_group_options?.token_id ?? "";
+import { useNavigate } from 'react-router-dom';
 
+const ConnectToken = () => {
+  const { userInfo } = useContext(AppContext);
+  const token_id = !userInfo?.chat_group_options?.admin_uid ? userInfo?.chat_group_options?.token_id ?? "" : "";
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     token: '',
   });
@@ -55,20 +57,26 @@ const ConnectToken = () => {
         await updateDoc(AdminRef, {
           members_history: arrayUnion(common_member_obj)
         });
-        const payload = {
-          chat_group_options: {
-            token_id: formData.token
-          }
-        };
-        await updateDoc(currentUserRef, payload);
-        const userRef = doc(firestore, "User-Data", userInfo.uid);
-        const groupSnap = await getDoc(userRef);
-        if (groupSnap.exists()) {
-          handleUserInfo(groupSnap.data());
+
+        if (getAdmin?.uid !== userInfo?.uid) {
+          const payload = {
+            chat_group_options: {
+              group_image: getAdmin?.chat_group_options.group_image,
+              group_heading: getAdmin?.chat_group_options.group_heading,
+              group_name: getAdmin?.chat_group_options.group_name,
+              isLogout: false,
+              isAdmin: false,
+              admin_uid: getAdmin?.uid,
+              token_id: formData.token
+            }
+          };
+          await updateDoc(currentUserRef, payload);
         }
+       
         showToast('Token successfully connected', 'success');
+        navigate('/social')
       } else {
-        showToast('No valid token found. Please check the token and try again.', 'danger');
+        showToast('No valid token found. Please check with admin.', 'danger');
       }
     } catch (error) {
       showToast(`No valid token found. Please check the token and try again.`, 'danger');

@@ -4,6 +4,8 @@ import { getColor, getItemFromStore } from 'helpers/utils';
 import { configReducer } from './reducers/configReducer';
 import useToggleStyle from './hooks/useToggleStyle';
 import { settings } from 'config';
+import { ChatProvider } from 'context/ChatProvider';
+import { GroupProvider } from 'context/GroupProvider';
 
 const Main = ({ children }) => {
   const [userInfo, setUserInfo] = useState({});
@@ -61,9 +63,13 @@ const Main = ({ children }) => {
   };
 
   return (
-    <AppContext.Provider value={contextValue}>
-      {children}
-    </AppContext.Provider>
+    <ChatProvider>
+      <GroupProvider>
+        <AppContext.Provider value={contextValue}>
+          {children}
+        </AppContext.Provider>
+      </GroupProvider>
+    </ChatProvider>
   );
 };
 

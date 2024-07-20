@@ -9,8 +9,9 @@ import Profile from 'components/app/profile/Profile';
 import Chat from 'components/app/chat/Chat';
 
 const DashboardLayout = () => {
-  const HTMLClassList = document.getElementsByTagName('html')[0].classList;
   useEffect(() => {
+    const HTMLClassList = document.getElementsByTagName('html')[0].classList;
+
     if (is.windows()) {
       HTMLClassList.add('windows');
     }
@@ -20,19 +21,23 @@ const DashboardLayout = () => {
     if (is.firefox()) {
       HTMLClassList.add('firefox');
     }
-  }, [HTMLClassList]);
+
+    // Cleanup function to remove classes on unmount
+    return () => {
+      HTMLClassList.remove('windows', 'chrome', 'firefox');
+    };
+  }, []);
 
   return (
     <Routes>
+      <Route element={<MainLayout />}>
+        <Route path="/" element={<Landing />} />
+        <Route path="/social" element={<Chat />} /> 
+        <Route path="/profile" element={<Profile />} />
+      </Route>
       <Route element={<ErrorLayout />}>
         <Route path="/404" element={<Error404 />} />
       </Route>
-
-      <Route element={<MainLayout />}>
-        <Route path="/" element={<Chat />} />
-        <Route path="/profile" element={<Profile />} />
-      </Route>
-
       <Route path="*" element={<Navigate to="/404" replace />} />
     </Routes>
   );

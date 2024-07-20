@@ -16,7 +16,7 @@ const ChatSidebar = () => {
             {chatHistory.loading ? (
               <Row className="g-0 w-100 h-100">
                 <Col xs={12} className='d-flex align-items-center justify-content-center' style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}>
-                  <Spinner animation="border" variant="success" />
+                  <Spinner animation="grow" variant="success" size='sm' />
                 </Col>
               </Row>
             ) : (

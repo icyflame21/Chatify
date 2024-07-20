@@ -6,14 +6,6 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 const ChatMessageOptions = () => {
   const [actions] = useState([
     {
-      tooltip: 'Forward',
-      icon: 'share'
-    },
-    {
-      tooltip: 'Archive',
-      icon: 'archive'
-    },
-    {
       tooltip: 'Edit',
       icon: 'edit'
     },

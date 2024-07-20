@@ -5,16 +5,14 @@ import Message from './Message';
 import SimpleBarReact from 'simplebar-react';
 import ThreadInfo from './ThreadInfo';
 import { ChatContext } from 'context/ChatProvider';
+import { Col, Row, Spinner } from 'react-bootstrap';
 
 const ChatContentBody = ({ thread }) => {
-  let lastDate = null;
   const messagesEndRef = useRef();
 
-  const { getUser, messages, scrollToBottom, handleScrollToBottom } =
-    useContext(ChatContext);
-  const user = getUser(thread);
-  const { content } = messages.find(({ id }) => id === thread.messagesId);
+  const { scrollToBottom, handleScrollToBottom, chatMessages } = useContext(ChatContext);
 
+  console.log("chatMessages", chatMessages);
   useEffect(() => {
     if (scrollToBottom) {
       setTimeout(() => {
@@ -26,27 +24,29 @@ const ChatContentBody = ({ thread }) => {
 
   return (
     <div className="chat-content-body" style={{ display: 'inherit' }}>
-      <ThreadInfo thread={thread} isOpenThreadInfo={true} />
+      <ThreadInfo thread={thread} />
       <SimpleBarReact style={{ height: '100%' }}>
         <div className="chat-content-scroll-area">
-          <ChatContentBodyIntro user={user} />
-          {content.map(({ message, time, senderUserId, status }, index) => (
-            <div key={index}>
-              {lastDate !== time.date && (
-                <div className="text-center fs--2 text-500">{`${time.date}, ${time.hour}`}</div>
-              )}
-              {(() => {
-                lastDate = time.date;
-              })()}
-              <Message
-                message={message}
-                senderUserId={senderUserId}
-                time={time}
-                status={status}
-                isGroup={thread.type === 'group'}
-              />
-            </div>
-          ))}
+          <ChatContentBodyIntro thread={thread} />
+          {chatMessages.loading ? (
+            <Row className="g-0 w-100 h-100">
+              <Col xs={12} className='d-flex align-items-center justify-content-center' style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}>
+                <Spinner animation="border" variant="grow" size='sm' />
+              </Col>
+            </Row>
+          ) : (
+            chatMessages.data && Object.keys(chatMessages.data).map((element) => (
+              <div key={element}>
+                <div className="text-center fs--2 text-500">{element}</div>
+                {chatMessages.data[element].map((message, index) => (
+                  <Message
+                    key={`${message.createdAt}_${index}`}
+                    message={message}
+                  />
+                ))}
+
+              </div>
+            )))}
         </div>
         <div ref={messagesEndRef} />
       </SimpleBarReact>

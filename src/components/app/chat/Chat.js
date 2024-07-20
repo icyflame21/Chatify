@@ -3,14 +3,16 @@ import React, { useContext, useEffect } from 'react';
 import { Card, Tab } from 'react-bootstrap';
 import ChatContent from './content/ChatContent';
 import ChatSidebar from './sidebar/ChatSidebar';
-import { getAdminDoc } from 'helpers/query';
-import AppContext from 'context/Context';
 import { ChatContext } from 'context/ChatProvider';
+import { getAdminDoc } from 'helpers/query';
+import useFetchMessages from 'helpers/fetchMessages';
+import AppContext from 'context/Context';
 
 const ChatTab = () => {
+  const fetchMessages = useFetchMessages();
   const { userInfo } = useContext(AppContext);
-  const { handleChatHistory, handleHideSideBar, handleScrollToBottom } = useContext(ChatContext);
-
+  const { handleHideSideBar, handleScrollToBottom,handleChatHistory } = useContext(ChatContext);
+  
   useEffect(() => {
     if (userInfo?.chat_group_options?.token_id) {
       const fetchChatHistory = async () => {
@@ -19,6 +21,7 @@ const ChatTab = () => {
           handleChatHistory({
             data: [result]
           });
+          fetchMessages()
         } catch (error) {
           console.error('Failed to fetch chat history:', error);
         } finally {
@@ -30,8 +33,10 @@ const ChatTab = () => {
 
       fetchChatHistory();
     }
-  }, [userInfo?.chat_group_options?.token_id]);
+    document.title = "Chatify | Social";
 
+  }, [userInfo?.chat_group_options?.token_id]);
+  
   return (
     <Tab.Container
       id="left-tabs-example"

@@ -1,8 +1,8 @@
-import {  Slide, toast } from 'react-toastify';
+import { Slide, toast } from 'react-toastify';
 
 const defaultOptions = {
     position: "top-center",
-    autoClose: 3000,
+    autoClose: 4000,
     hideProgressBar: false,
     closeOnClick: true,
     pauseOnHover: true,
@@ -25,6 +25,8 @@ export const showToast = (message, type) => {
             toast.error(message, defaultOptions);
             break;
         case 'info':
+            toast.info(message, defaultOptions);
+            break;
         default: break;
     }
 };

@@ -3,8 +3,8 @@ import { Card } from 'react-bootstrap';
 import Background from 'components/common/Background';
 import Avatar from 'components/common/Avatar';
 import classNames from 'classnames';
-import CoverPhoto from 'assets/img/illustrations/13.jpg'
-import DefaultProfile from 'assets/img/illustrations/avatar.png'
+import CoverPhoto from 'assets/img/13.jpg'
+import DefaultProfile from 'assets/img/avatar.png'
 
 const ProfileBannerHeader = ({ avatar, coverSrc, className }) => 
 {

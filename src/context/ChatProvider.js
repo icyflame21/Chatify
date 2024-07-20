@@ -1,5 +1,5 @@
 import React, { createContext, useState } from "react";
-import DefaultProfile from 'assets/img/illustrations/avatar.png'
+import DefaultProfile from 'assets/img/avatar.png'
 
 export const ChatContext = createContext();
 
@@ -8,11 +8,21 @@ export const ChatProvider = ({ children }) => {
         loading: true,
         data: []
     });
+
+    const [chatMessages, setChatmessages] = useState({
+        loading: true,
+        data: []
+    });
+
     const [isOpenThreadInfo, setIsOpenThreadInfo] = useState(false)
     const [hideSidebar, setHideSidebar] = useState(false);
+    const [isSending, setIsSending] = useState(false);
+
     const [scrollToBottom, setScrollToBottom] = useState(true);
 
     const handleHideSideBar = (value) => setHideSidebar(value)
+    const handleIsSending = (value) => setIsSending(value)
+
 
     const handleScrollToBottom = (value) => setScrollToBottom(value)
 
@@ -20,6 +30,13 @@ export const ChatProvider = ({ children }) => {
 
     const handleChatHistory = (value) => {
         setChatHistory(prevState => ({
+            ...prevState,
+            ...value
+        }));
+    };
+
+    const handleChatMessages = (value) => {
+        setChatmessages(prevState => ({
             ...prevState,
             ...value
         }));
@@ -44,7 +61,11 @@ export const ChatProvider = ({ children }) => {
         hideSidebar,
         handleHideSideBar,
         scrollToBottom,
-        handleScrollToBottom
+        handleScrollToBottom,
+        handleChatMessages,
+        chatMessages,
+        handleIsSending,
+        isSending
     };
 
     return <ChatContext.Provider value={contextValue}>{children}</ChatContext.Provider>;

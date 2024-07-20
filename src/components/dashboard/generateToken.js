@@ -1,12 +1,11 @@
 import FalconCardHeader from 'components/common/FalconCardHeader'
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
 import { getDownloadURL, getStorage, ref, uploadString } from 'firebase/storage';
 import React, { useContext, useState } from 'react'
 import { Button, Card, Col, Form, Row, Spinner } from 'react-bootstrap'
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
-import cloudUpload from 'assets/img/illustrations/cloud-upload.svg';
-import bg1 from 'assets/img/illustrations/bg-1.jpg';
+import cloudUpload from 'assets/img/cloud-upload.svg';
 import Avatar from 'components/common/Avatar';
 import { GroupContext } from 'context/GroupProvider';
 import AppContext from 'context/Context';
@@ -15,11 +14,12 @@ import { showToast } from 'helpers/toast';
 import Flex from 'components/common/Flex';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
+import bg1 from 'assets/img/corner-5.png';
 
 const GenerateToken = () => {
     const [avatarLoader, setAvatarLoader] = useState(false);
     const { group_loading, handleGroupLoading } = useContext(GroupContext);
-    const { handleUserInfo, userInfo } = useContext(AppContext);
+    const { userInfo } = useContext(AppContext);
 
     const storage = getStorage();
 
@@ -49,7 +49,7 @@ const GenerateToken = () => {
         mode: 'onBlur',
         defaultValues: {
             group_name: '',
-            group_image: bg1,
+            group_image: '',
             group_heading: ''
         }
     });
@@ -84,11 +84,7 @@ const GenerateToken = () => {
             }
         };
         await updateDoc(documentRef, payload);
-        const userRef = doc(firestore, "User-Data", userInfo.uid);
-        const groupSnap = await getDoc(userRef);
-        if (groupSnap.exists()) {
-            handleUserInfo(groupSnap.data());
-        }
+
         reset()
     };
 
@@ -152,7 +148,7 @@ const GenerateToken = () => {
                                     </Col>
                                 </Row>
                             ) : (
-                                <Avatar size="3xl" src={watch('group_image')} />
+                                <Avatar size="3xl" src={watch('group_image') ? watch('group_image') : bg1} />
                             )}
                         </Col>
                         {!group_loading && (

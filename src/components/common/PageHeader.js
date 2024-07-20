@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { Card, Col, Row } from 'react-bootstrap';
 import Background from './Background';
 import createMarkup from 'helpers/createMarkup';
-import Corner5 from 'assets/img/illustrations/authentication-corner.png'
+import Corner5 from 'assets/img/authentication-corner.png'
 
 const PageHeader = ({
   title,

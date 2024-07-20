@@ -25,8 +25,6 @@ const Section = ({
     </section>
   );
 };
-Section.defaultProps = {
-  fluid: false
-};
+
 
 export default Section;

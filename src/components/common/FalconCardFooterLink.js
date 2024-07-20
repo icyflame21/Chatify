@@ -30,5 +30,4 @@ const FalconCardFooterLink = ({
     </Button>
   </Card.Footer>
 );
-FalconCardFooterLink.defaultProps = { to: '#!', bg: 'light' };
 export default FalconCardFooterLink;

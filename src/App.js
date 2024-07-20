@@ -7,64 +7,39 @@ import { LoginProvider } from 'context/LoginProvider';
 import { auth, firestore } from 'config';
 import DashboardLayout from 'layouts/DashboardLayout';
 import AuthenticatedLayout from 'layouts/AuthenticatedLayout';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 import { Col, Row, Spinner } from 'react-bootstrap';
 
 const App = () => {
   const { handleUserInfo, userInfo, loading, handleLoading } = useContext(AppContext);
-  const authChannel = new BroadcastChannel('auth');
-
   useEffect(() => {
-    const handleAuthStateChange = async (user) => {
+    const handleAuthStateChange = (user) => {
       handleLoading(true);
-      try {
-        if (user) {
-          await user.reload();
-          if (user.emailVerified) {
-            const documentRef = doc(firestore, "User-Data", user.uid);
-            const docSnap = await getDoc(documentRef);
-            if (docSnap.exists()) {
-              authChannel.postMessage({ status: 'loggedIn', userData: docSnap.data() });
-              handleUserInfo(docSnap.data());
-            } else {
-              handleUserInfo({});
-            }
+      if (user && user.emailVerified) {
+        const documentRef = doc(firestore, "User-Data", user.uid);
+        const unsubscribe = onSnapshot(documentRef, (snapshot) => {
+          if (snapshot.exists()) {
+            handleUserInfo(snapshot.data());
           } else {
             handleUserInfo({});
           }
-        } else {
-          authChannel.postMessage({ status: 'loggedOut' });
+          handleLoading(false);
+        }, (error) => {
+          console.error("Error listening to Firestore changes: ", error);
           handleUserInfo({});
-        }
-      } catch (error) {
-        console.error("Error during auth state change: ", error);
+          handleLoading(false);
+        });
+
+        return unsubscribe;
+      } else {
         handleUserInfo({});
-      } finally {
         handleLoading(false);
       }
     };
 
-    const unsubscribe = onAuthStateChanged(auth, handleAuthStateChange);
+    const unsubscribeAuth = onAuthStateChanged(auth, handleAuthStateChange);
 
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    authChannel.onmessage = (event) => {
-      try {
-        if (event.data.status === 'loggedOut') {
-          handleUserInfo({});
-        } else if (event.data.status === 'loggedIn') {
-          handleUserInfo(event.data.userData);
-        }
-      } catch (error) {
-        console.error("Error processing authChannel message: ", error);
-      }
-    };
-
-    return () => {
-      authChannel.close();
-    };
+    return () => unsubscribeAuth();
   }, []);
 
   return (
