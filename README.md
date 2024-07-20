@@ -10,6 +10,10 @@ Chatify is a real-time chat application built with React and Firebase. It allows
 - **User Profiles:** Manage user profiles with avatars and names.
 - **Responsive Design:** Optimized for both desktop and mobile devices.
 
+## Live Demo
+
+You can view the live application at: [Chatify Live Site](https://chatify-899.web.app/)
+
 ## Technologies Used
 
 - **React:** Front-end library for building the user interface.
@@ -52,9 +56,7 @@ To set up the Chatify project locally, follow these steps:
 - **Create / Join Chat Rooms:** Navigate to the chat rooms section to start or join discussions.
 - **Manage Profile:** Update your profile information and avatar in the settings.
 
-## Live Demo
 
-You can view the live application at: [Chatify Live Site](https://chatify-899.web.app/)
 
 ## Contributing
 
