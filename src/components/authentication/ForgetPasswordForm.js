@@ -1,29 +1,30 @@
 import React, { useEffect, useContext } from 'react';
 import { toast } from 'react-toastify';
 import { Button, Form, Row, Col, Spinner } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import { firestoreAuth } from 'config'
+import { auth } from 'config'
 import { useForm } from 'react-hook-form';
 import Flex from 'components/common/Flex';
 import { sendPasswordResetEmail } from "firebase/auth";
 import { LoginContext } from 'context/LoginProvider';
+import { useNavigate } from 'react-router-dom';
 
 const ForgetPasswordForm = () => {
-  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    reset
   } = useForm();
   const { loginLoading, handleLoginLoading } = useContext(LoginContext)
+  const navigate = useNavigate();
 
   const onSubmit = data => {
     handleLoginLoading(true)
-    sendPasswordResetEmail(firestoreAuth, data.email, {
-      url: window.location.origin + '/login'
-    })
-      .then(() => {
+    sendPasswordResetEmail(auth, data.email)
+      .then((data) => {
+        navigate('/')
         handleLoginLoading(false)
+        reset()
         toast.success(`Password reset email sent!`, {
           theme: 'colored'
         });
@@ -38,7 +39,7 @@ const ForgetPasswordForm = () => {
 
 
   useEffect(() => {
-    document.title = "Omnifood | Forget Password";
+    document.title = "Chatify | Forget Password";
   }, []);
 
   return (

@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import NavbarTop from 'components/navbar/top/NavbarTop';
-import NavbarVertical from 'components/navbar/vertical/NavbarVertical';
 import Footer from 'components/footer/Footer';
 import classNames from 'classnames';
+import NavbarTop from 'components/navbar/NavbarTop';
+import { GroupProvider } from 'context/GroupProvider';
+import { ChatProvider } from 'context/ChatProvider';
 
 const MainLayout = () => {
   const { hash, pathname } = useLocation();
@@ -26,15 +27,17 @@ const MainLayout = () => {
 
 
   return (
-    <div className='container-fluid'>
-      <NavbarVertical />
-      <div className={classNames('content')}>
-        <NavbarTop />
-        {/*------ Main Routes ------*/}
-        <Outlet />
-        <Footer />
-      </div>
-    </div>
+    <ChatProvider>
+      <GroupProvider>
+        <div className='container-fluid bg-200'>
+          <div className={classNames('content')}>
+            <NavbarTop />
+            <Outlet />
+            <Footer />
+          </div>
+        </div>
+      </GroupProvider>
+    </ChatProvider>
   );
 };
 

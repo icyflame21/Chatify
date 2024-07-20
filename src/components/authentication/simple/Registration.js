@@ -15,7 +15,7 @@ const Registration = () => {
         </Col>
         <Col xs="auto">
           {loginLoading ? '' : <p className="fs--1 text-600 mb-0">
-            Have an account? <Link to="/login">Login</Link>
+            Have an account? <Link to="/">Login</Link>
           </p>}
         </Col>
       </Row>

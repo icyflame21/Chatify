@@ -1,9 +1,9 @@
 {
-  "short_name": "OmniFood",
-  "name": "OmniFood",
+  "short_name": "Chatify",
+  "name": "Chatify",
   "icons": [
     {
-      "src": "omnifood-logo.png",
+      "src": "Chatify-logo.png",
       "type": "image/x-icon"
     }
   ],

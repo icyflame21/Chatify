@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const useToggleStylesheet = (isRTL, isDark, configDispatch) => {
+const useToggleStylesheet = (isDark, configDispatch) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -9,9 +9,7 @@ const useToggleStylesheet = (isRTL, isDark, configDispatch) => {
       link => link.remove()
     );
     const link = document.createElement('link');
-    link.href = `${process.env.PUBLIC_URL}/css/theme${
-      isRTL ? '-rtl' : ''
-    }.min.css`;
+    link.href = `${process.env.PUBLIC_URL}/css/theme.min.css`;
     link.type = 'text/css';
     link.rel = 'stylesheet';
     link.className = 'theme-stylesheet';
@@ -22,8 +20,8 @@ const useToggleStylesheet = (isRTL, isDark, configDispatch) => {
     document.getElementsByTagName('head')[0].appendChild(link);
     document
       .getElementsByTagName('html')[0]
-      .setAttribute('dir', isRTL ? 'rtl' : 'ltr');
-  }, [isRTL]);
+      .setAttribute('dir', 'ltr');
+  }, []);
 
   useEffect(() => {
     document.documentElement.classList[isDark ? 'add' : 'remove']('dark');

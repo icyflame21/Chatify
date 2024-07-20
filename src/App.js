@@ -1,106 +1,86 @@
 import React, { useEffect, useContext } from 'react';
 import 'react-toastify/dist/ReactToastify.min.css';
-import 'react-datepicker/dist/react-datepicker.css';
 import './App.css';
-import ScrollToTop from 'react-scroll-to-top';
-import { FaArrowUp } from "react-icons/fa";
-import { doc, getDoc } from 'firebase/firestore';
-import { OmnifoodServer } from 'config';
-import { firestoreAuth } from 'config'
-import { onAuthStateChanged } from "firebase/auth"
+import { onAuthStateChanged } from "firebase/auth";
 import AppContext from 'context/Context';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Col, Row, Spinner } from 'react-bootstrap';
-import Loadable from 'react-loadable';
-import Layout from './layouts/Layout';
 import { LoginProvider } from 'context/LoginProvider';
+import { auth, firestore } from 'config';
+import DashboardLayout from 'layouts/DashboardLayout';
+import AuthenticatedLayout from 'layouts/AuthenticatedLayout';
+import { doc, getDoc } from 'firebase/firestore';
+import { Col, Row, Spinner } from 'react-bootstrap';
 
 const App = () => {
-  const { pathname } = useLocation();
-  const excludedPaths = ['/login', '/register', '/forgot-password', '/'];
-  const {
-    handleLoading,
-    handleUserInfo,
-    loading
-  } = useContext(AppContext);
-
-  const navigate = useNavigate()
-  
-  const customStyles = {
-    backgroundColor: "#E67E22",
-    borderRadius: "50%",
-    width: "40px",
-    height: "40px",
-    zIndex: 10000000,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    transition: "background-color 0.2s ease-in-out",
-    "&:hover": {
-      backgroundColor: "#fff",
-    },
-  };
+  const { handleUserInfo, userInfo, loading, handleLoading } = useContext(AppContext);
+  const authChannel = new BroadcastChannel('auth');
 
   useEffect(() => {
-    handleLoading(true)
-    Loadable.preloadReady().then(() => {
-      onAuthStateChanged(firestoreAuth, async (user) => {
+    const handleAuthStateChange = async (user) => {
+      handleLoading(true);
+      try {
         if (user) {
+          await user.reload();
           if (user.emailVerified) {
-            const documentRef = doc(OmnifoodServer, user.uid, 'User-Data')
+            const documentRef = doc(firestore, "User-Data", user.uid);
             const docSnap = await getDoc(documentRef);
             if (docSnap.exists()) {
-              handleUserInfo(docSnap.data())
-              handleLoading(false)
-              if (excludedPaths.includes(pathname)) {
-                navigate('/dashboard')
-              } else navigate(pathname)
+              authChannel.postMessage({ status: 'loggedIn', userData: docSnap.data() });
+              handleUserInfo(docSnap.data());
             } else {
-              handleLoading(false)
-              if (pathname === '/') {
-                navigate('/')
-              } else {
-                navigate('/login')
-              }
+              handleUserInfo({});
             }
           } else {
-            handleLoading(false)
-            if (pathname === '/') {
-              navigate('/')
-            } else {
-              navigate('/login')
-            }
+            handleUserInfo({});
           }
         } else {
-          handleLoading(false)
-          if (pathname === '/') {
-            navigate('/')
-          } else {
-            navigate('/login')
-          }
+          authChannel.postMessage({ status: 'loggedOut' });
+          handleUserInfo({});
         }
-      })
-    });
+      } catch (error) {
+        console.error("Error during auth state change: ", error);
+        handleUserInfo({});
+      } finally {
+        handleLoading(false);
+      }
+    };
+
+    const unsubscribe = onAuthStateChanged(auth, handleAuthStateChange);
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    authChannel.onmessage = (event) => {
+      try {
+        if (event.data.status === 'loggedOut') {
+          handleUserInfo({});
+        } else if (event.data.status === 'loggedIn') {
+          handleUserInfo(event.data.userData);
+        }
+      } catch (error) {
+        console.error("Error processing authChannel message: ", error);
+      }
+    };
+
+    return () => {
+      authChannel.close();
+    };
   }, []);
 
   return (
-    <>
-      {loading && excludedPaths.includes(pathname) ? <Row className="g-0 w-100 h-100" >
+    loading ? (
+      <Row className="g-0 w-100 h-100">
         <Col xs={12} className='d-flex align-items-center justify-content-center' style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}>
-          <Spinner animation="border" variant="primary" />
+          <Spinner animation="border" variant="success" />
         </Col>
-      </Row> : <>
-        <LoginProvider>
-          <ScrollToTop
-            smooth
-            component={<FaArrowUp className='text-white' />}
-            style={customStyles}
-          />
-          <Layout />
-        </LoginProvider>
-      </>}
-    </>
-
+      </Row>
+    ) : Object.keys(userInfo).length > 0 ? (
+      <DashboardLayout />
+    ) : (
+      <LoginProvider>
+        <AuthenticatedLayout />
+      </LoginProvider>
+    )
   );
 };
 

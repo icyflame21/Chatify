@@ -1,37 +1,21 @@
 import React, { useReducer, useState } from 'react';
 import AppContext from 'context/Context';
-import { settings } from './config';
 import { getColor, getItemFromStore } from 'helpers/utils';
 import { configReducer } from './reducers/configReducer';
 import useToggleStyle from './hooks/useToggleStyle';
+import { settings } from 'config';
 
 const Main = ({ children }) => {
-  const [showBookMarks, setShowBookMarks] = useState([]);
-
-  const [showCreatedRecipes, setShowCreatedRecipes] = useState([]);
-  const [createdRecipesLoading, setCreatedRecipesLoading] = useState(false);
-
-  const [recipeInfoData, setRecipeInfoData] = useState({});
-
   const [userInfo, setUserInfo] = useState({});
   const [loading, setLoading] = useState(false);
 
   const configState = {
-    isRTL: getItemFromStore('isRTL', settings.isRTL),
     isDark: getItemFromStore('isDark', settings.isDark),
-    navbarPosition: getItemFromStore('navbarPosition', settings.navbarPosition),
-    isNavbarVerticalCollapsed: getItemFromStore(
-      'isNavbarVerticalCollapsed',
-      settings.isNavbarVerticalCollapsed
-    ),
-    showBurgerMenu: settings.showBurgerMenu,
-    navbarCollapsed: false
   };
 
   const [config, configDispatch] = useReducer(configReducer, configState);
 
   const { isLoaded } = useToggleStyle(
-    config.isRTL,
     config.isDark,
     configDispatch
   );
@@ -42,12 +26,6 @@ const Main = ({ children }) => {
       payload: {
         key,
         value,
-        setInStore: [
-          'isRTL',
-          'isDark',
-          'navbarPosition',
-          'isNavbarVerticalCollapsed',
-        ].includes(key)
       }
     });
   };
@@ -66,13 +44,7 @@ const Main = ({ children }) => {
       />
     );
   }
-  const handleBookMarksData = (bookMarksData) => setShowBookMarks(bookMarksData);
 
-  const handleCreatedRecipesData = (data) => setShowCreatedRecipes(data);
-  const handleCreatedRecipesLoading = (data) => setCreatedRecipesLoading(data);
-
-
-  const handleRecipeInfoData = (data) => setRecipeInfoData(data);
 
   const handleLoading = (loading) => setLoading(loading);
 
@@ -82,18 +54,10 @@ const Main = ({ children }) => {
     config,
     setConfig,
     configDispatch,
-    showBookMarks,
-    handleBookMarksData,
     handleLoading,
     loading,
     handleUserInfo,
     userInfo,
-    handleRecipeInfoData,
-    recipeInfoData,
-    showCreatedRecipes,
-    handleCreatedRecipesData,
-    createdRecipesLoading,
-    handleCreatedRecipesLoading
   };
 
   return (

@@ -1,4 +1,3 @@
-import { settings } from 'config';
 import { setItemToStore } from 'helpers/utils';
 
 export const configReducer = (state, action) => {
@@ -15,12 +14,6 @@ export const configReducer = (state, action) => {
     case 'REFRESH':
       return {
         ...state
-      };
-    case 'RESET':
-      localStorage.clear();
-      return {
-        ...state,
-        ...settings
       };
     default:
       return state;

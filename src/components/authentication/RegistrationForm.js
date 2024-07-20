@@ -1,83 +1,57 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import { Button, Form, Row, Col, Spinner } from 'react-bootstrap';
-import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth"
-import { firestoreAuth } from 'config'
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import { auth } from 'config';
 import { useForm } from 'react-hook-form';
 import Flex from 'components/common/Flex';
-import { useEffect } from 'react';
 import { LoginContext } from 'context/LoginProvider';
+import { showToast } from 'helpers/toast';
 
 const RegistrationForm = () => {
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors }
-  } = useForm();
+  const { register, handleSubmit, watch, formState: { errors }, reset } = useForm();
+  const { loginLoading, handleLoginLoading } = useContext(LoginContext);
 
-  const { loginLoading, handleLoginLoading } = useContext(LoginContext)
-
-  const onSubmit = data => {
-    handleLoginLoading(true)
-    createUserWithEmailAndPassword(firestoreAuth, data.email, data.confirmPassword)
-      .then(() => {
-        sendEmailVerification(firestoreAuth.currentUser,
-          {
-            url: window.location.origin + '/login'
-          }).then(() => {
-            handleLoginLoading(false)
-            toast.success(`Successfully registered.Please verify your email`, {
-              theme: 'colored'
-            });
-          })
-          .catch((err) => {
-            handleLoginLoading(false)
-            toast.error(`${err.message}`, {
-              theme: 'colored'
-            });
-          })
-
-      })
-      .catch((error) => {
-        handleLoginLoading(false)
-        toast.error(`${error.message}`, {
-          theme: 'colored'
-        });
-      });
+  const onSubmit = async (data) => {
+    handleLoginLoading(true);
+    try {
+      await createUserWithEmailAndPassword(auth, data.email, data.password);
+      await sendEmailVerification(auth.currentUser);
+      showToast('Successfully registered. Please verify your email', 'success');
+      reset()
+    } catch (error) {
+      showToast(error.message.replace('Firebase: ', ''), 'error');
+    } finally {
+      handleLoginLoading(false);
+    }
   };
 
   useEffect(() => {
-    document.title = "Omnifood | Register";
+    document.title = 'Chatify | Register';
   }, []);
 
   return (
-    <Form noValidate
-      onSubmit={handleSubmit(onSubmit)}
-      role="form"
-    >
+    <Form noValidate onSubmit={handleSubmit(onSubmit)} role="form">
       <Form.Group className="mb-3">
         <Form.Control
           placeholder='email@domain.com'
           name="email"
-          isInvalid={!!errors.email}
-          disabled={loginLoading}
           type="email"
+          disabled={loginLoading}
+          isInvalid={!!errors.email}
           {...register('email', {
             required: 'Email Id is required',
             pattern: {
-              value:
-                /[A-Za-z0-9._%+-]{3,}@[a-zA-Z]{3,}([.]{1}[a-zA-Z]{2,}|[.]{1}[a-zA-Z]{2,}[.]{1}[a-zA-Z]{2,})/i,
-              message: 'Email must be valid'
-            }
-          })
-          }
+              value: /[A-Za-z0-9._%+-]{3,}@[a-zA-Z]{3,}([.]{1}[a-zA-Z]{2,}|[.]{1}[a-zA-Z]{2,}[.]{1}[a-zA-Z]{2,})/i,
+              message: 'Email must be valid',
+            },
+          })}
         />
         <Form.Control.Feedback type="invalid">
           {errors.email && errors.email.message}
         </Form.Control.Feedback>
       </Form.Group>
+
       <Form.Group className="mb-3">
         <Form.Control
           placeholder='Password'
@@ -88,20 +62,20 @@ const RegistrationForm = () => {
           {...register('password', {
             required: 'You must specify a password',
             minLength: {
-              value: 2,
-              message: 'Password must have at least 2 characters'
+              value: 6,
+              message: 'Password must have at least 6 characters',
             },
             pattern: {
-              value:
-                /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/,
-              message: 'Password should be strong(Use special characters)'
-            }
+              value: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,}$/,
+              message: 'Password should be strong (Use special characters)',
+            },
           })}
         />
         <Form.Control.Feedback type="invalid">
           {errors.password && errors.password.message}
         </Form.Control.Feedback>
       </Form.Group>
+
       <Form.Group className="mb-3">
         <Form.Control
           placeholder='Confirm Password'
@@ -110,16 +84,15 @@ const RegistrationForm = () => {
           disabled={loginLoading}
           isInvalid={!!errors.confirmPassword}
           {...register('confirmPassword', {
-            required: 'You must confirm password',
-            validate: value =>
-              value === watch('password') ||
-              'Passwords are not matching'
+            required: 'You must confirm your password',
+            validate: value => value === watch('password') || 'Passwords do not match',
           })}
         />
         <Form.Control.Feedback type="invalid">
           {errors.confirmPassword && errors.confirmPassword.message}
         </Form.Control.Feedback>
       </Form.Group>
+
       <Form.Group className="mb-3">
         <Form.Check type="checkbox" className="form-check">
           <Form.Check.Input
@@ -128,7 +101,7 @@ const RegistrationForm = () => {
             disabled={loginLoading}
             isInvalid={!!errors.isAccepted}
             {...register('isAccepted', {
-              required: 'You need to agree the terms and Privacy.',
+              required: 'You need to agree to the terms and privacy policy.',
             })}
           />
           <Form.Check.Label className="form-label">
@@ -150,16 +123,14 @@ const RegistrationForm = () => {
               </Flex>
             </Col>
           </Row>
-        ) : (<Button
-          className="w-100"
-          type="submit"
-        >
-          Register
-        </Button>)}
+        ) : (
+          <Button className="w-100" type="submit">
+            Register
+          </Button>
+        )}
       </Form.Group>
     </Form>
   );
 };
-
 
 export default RegistrationForm;

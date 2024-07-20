@@ -7,7 +7,7 @@ const Footer = () => (
     <Row className="justify-content-between text-center fs--1 mt-4 mb-3">
       <Col sm="auto">
         <p className="mb-0 text-600">
-          © 2023 Omnifood Inc.
+          © {new Date().getFullYear()} Chatify Inc.
         </p>
       </Col>
       <Col sm="auto">

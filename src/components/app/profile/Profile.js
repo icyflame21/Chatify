@@ -2,15 +2,14 @@ import React from 'react';
 import ProfileBanner from './Banner';
 import { Col, Row, Spinner } from 'react-bootstrap';
 import { useEffect } from 'react';
-import BookMarks from './BookMarks';
 import { useContext } from 'react';
 import AppContext from 'context/Context';
 
 const Profile = () => {
-  const { showBookMarks, loading, userInfo } = useContext(AppContext);
+  const { loading, userInfo } = useContext(AppContext);
 
   useEffect(() => {
-    document.title = "Omnifood | Profile";
+    document.title = "Chatify | Profile";
   }, [])
 
 
@@ -23,16 +22,6 @@ const Profile = () => {
           </Col>
         </Row> : <>
           {Object.keys(userInfo).length > 0 && <ProfileBanner userData={userInfo} />}
-          {showBookMarks.length > 0 && <Row className="g-3">
-            <Col lg={12}>
-              <BookMarks
-                className="mb-3"
-                cardTitle="Bookmarks"
-                events={showBookMarks.slice(0, 4)}
-                allBookMarksData={showBookMarks}
-              />
-            </Col>
-          </Row>}
         </>}
     </>
   );

@@ -1,126 +1,96 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import { Button, Form, Row, Col, Spinner } from 'react-bootstrap';
+import { useForm } from 'react-hook-form';
+import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import axios from 'axios';
+import { auth, firestore } from 'config';
+import AppContext from 'context/Context';
+import { LoginContext } from 'context/LoginProvider';
 import Divider from 'components/common/Divider';
 import SocialAuthButtons from './SocialAuthButtons';
-import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth"
-import { useNavigate } from 'react-router-dom';
-import { firestoreAuth } from 'config'
-import { useForm } from 'react-hook-form';
 import Flex from 'components/common/Flex';
-import { useEffect } from 'react';
-import { OmnifoodServer } from 'config';
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import { useContext } from 'react';
-import AppContext from 'context/Context';
-import axios from 'axios';
-import { LoginContext } from 'context/LoginProvider';
+import { showToast } from 'helpers/toast';
 
 const LoginForm = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors }
-  } = useForm();
-  const {
-    handleUserInfo,
-  } = useContext(AppContext);
-  const { loginLoading, handleLoginLoading } = useContext(LoginContext)
-  const navigate = useNavigate()
-  const [heading, setHeading] = useState('')
+  const { register, handleSubmit, formState: { errors }, reset } = useForm();
+  const { handleUserInfo } = useContext(AppContext);
+  const { loginLoading, handleLoginLoading } = useContext(LoginContext);
+  const [heading, setHeading] = useState('');
 
   const fetchHeading = async () => {
-    const response = await axios.get(process.env.REACT_APP_RANDOM_PROFILE_HEADING_URL);
-    setHeading(response.data.content)
-  }
-
-  const onSubmit = data => {
-    handleLoginLoading(true)
-    signInWithEmailAndPassword(firestoreAuth, data.email, data.password)
-      .then(() => {
-        onAuthStateChanged(firestoreAuth, async (user) => {
-          if (user) {
-            if (user.emailVerified) {
-              const documentRef = doc(OmnifoodServer, user.uid, 'User-Data')
-              const docSnap = await getDoc(documentRef);
-              const parts = user.email.split("@")[0].split(".");
-              const firstName = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
-              const lastName = parts[1].charAt(0).toUpperCase() + parts[1].slice(1);
-              if (docSnap.exists()) {
-                handleUserInfo(docSnap.data())
-                await updateDoc(documentRef, {
-                  accessToken: user.accessToken,
-                }, { capital: true }, { merge: true });
-              } else {
-                await setDoc(documentRef, {
-                  userName: user.displayName ? user.displayName : firstName + ' ' + lastName,
-                  firstName: firstName,
-                  lastName: lastName,
-                  userEmail: user.email,
-                  userProfilePhoto: user.photoURL,
-                  accessToken: user.accessToken,
-                  providerData: user.providerData,
-                  emailVerified: user.emailVerified,
-                  isAnonymous: user.isAnonymous,
-                  uid: user.uid,
-                  providerData: user.providerData,
-                  profileHeading: heading,
-                  reloadUserInfo: user.reloadUserInfo
-                }, { capital: true }, { merge: true });
-                handleUserInfo({
-                  userName: user.displayName ? user.displayName : firstName + ' ' + lastName,
-                  firstName: firstName,
-                  lastName: lastName,
-                  userEmail: user.email,
-                  userProfilePhoto: user.photoURL,
-                  accessToken: user.accessToken,
-                  providerData: user.providerData,
-                  emailVerified: user.emailVerified,
-                  isAnonymous: user.isAnonymous,
-                  uid: user.uid,
-                  providerData: user.providerData,
-                  reloadUserInfo: user.reloadUserInfo,
-                  profileHeading: heading,
-                })
-              }
-              toast.success(`Logged in as ${data.email}`, {
-                theme: 'colored'
-              });
-              handleLoginLoading(false)
-              navigate('/dashboard')
-            } else {
-              handleLoginLoading(false)
-              toast.warn(`Email not verified`, {
-                theme: 'colored'
-              });
-            }
-          } else {
-            handleLoginLoading(false)
-          }
-        })
-      })
-      .catch((err) => {
-        handleLoginLoading(false)
-        toast.warn(`${err.message}`, {
-          theme: 'colored'
-        });
-      });
+    try {
+      const response = await axios.get(process.env.REACT_APP_RANDOM_PROFILE_HEADING_URL);
+      setHeading(response.data.content);
+    } catch (error) {
+      showToast('Failed to fetch heading', 'danger');
+    }
   };
 
+  const handleFirebaseError = (error) => {
+    const errorMessage = error.message.replace('Firebase: ', '');
+    showToast(errorMessage, 'danger');
+  };
+
+  const onSubmit = async (data) => {
+    handleLoginLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, data.email, data.password);
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          if (user.emailVerified) {
+            const documentRef = doc(firestore, "User-Data", user.uid);
+            const docSnap = await getDoc(documentRef);
+            const parts = user.email.split('@')[0].split('.');
+            const firstName = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+            const lastName = parts[1].charAt(0).toUpperCase() + parts[1].slice(1);
+
+            const userInfo = {
+              userName: user.displayName || `${firstName} ${lastName}`,
+              firstName,
+              lastName,
+              userEmail: user.email,
+              userProfilePhoto: user.photoURL,
+              accessToken: user.accessToken,
+              providerData: user.providerData,
+              emailVerified: user.emailVerified,
+              uid: user.uid,
+              profileHeading: heading,
+            };
+
+            if (docSnap.exists()) {
+              handleUserInfo(docSnap.data());
+              await updateDoc(documentRef, { accessToken: user.accessToken });
+            } else {
+              await setDoc(documentRef, userInfo);
+              handleUserInfo(userInfo);
+            }
+
+            showToast(`Logged in as ${data.email}`, 'success');
+            reset()
+          } else {
+            showToast('Email not verified', 'warning');
+          }
+        }
+        handleLoginLoading(false);
+      });
+    } catch (error) {
+      handleFirebaseError(error);
+      handleLoginLoading(false);
+    }
+  };
 
   useEffect(() => {
-    fetchHeading()
-    document.title = "Omnifood | Login";
+    fetchHeading();
+    document.title = 'Chatify | Login';
   }, []);
 
   return (
-    <Form noValidate
-      onSubmit={handleSubmit(onSubmit)}
-      role="form">
+    <Form noValidate onSubmit={handleSubmit(onSubmit)} role="form">
       <Form.Group className="mb-3">
         <Form.Control
-          placeholder='email@domain.com'
+          placeholder="email@domain.com"
           name="email"
           type="email"
           disabled={loginLoading}
@@ -128,12 +98,10 @@ const LoginForm = () => {
           {...register('email', {
             required: 'Email Id is required',
             pattern: {
-              value:
-                /[A-Za-z0-9._%+-]{3,}@[a-zA-Z]{3,}([.]{1}[a-zA-Z]{2,}|[.]{1}[a-zA-Z]{2,}[.]{1}[a-zA-Z]{2,})/i,
-              message: 'Email must be valid'
-            }
-          })
-          }
+              value: /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}/i,
+              message: 'Email must be valid',
+            },
+          })}
         />
         <Form.Control.Feedback type="invalid">
           {errors.email && errors.email.message}
@@ -142,7 +110,7 @@ const LoginForm = () => {
 
       <Form.Group className="mb-3">
         <Form.Control
-          placeholder='Password'
+          placeholder="Password"
           name="password"
           type="password"
           disabled={loginLoading}
@@ -150,8 +118,8 @@ const LoginForm = () => {
           {...register('password', {
             required: 'You must specify a password',
             minLength: {
-              value: 2,
-              message: 'Password must have at least 2 characters'
+              value: 6,
+              message: 'Password must have at least 6 characters',
             },
           })}
         />
@@ -163,14 +131,13 @@ const LoginForm = () => {
       <Row className="justify-content-between align-items-center">
         <Col xs="auto">
         </Col>
-        {loginLoading ? '' : <Col xs="auto">
-          <Link
-            className="fs--1 mb-0"
-            to={`/forgot-password`}
-          >
-            Forget Password?
-          </Link>
-        </Col>}
+        {!loginLoading && (
+          <Col xs="auto">
+            <Link className="fs--1 mb-0" to="/forgot-password">
+              Forget Password?
+            </Link>
+          </Col>
+        )}
       </Row>
 
       <Form.Group>
@@ -178,23 +145,22 @@ const LoginForm = () => {
           <Row className="g-0">
             <Col xs={12} className="w-100 h-100 my-3">
               <Flex className="align-items-center justify-content-center">
-                <Spinner animation="border" variant="success" size='sm' />
+                <Spinner animation="border" variant="success" size="sm" />
               </Flex>
             </Col>
           </Row>
-        ) : (<Button
-          type="submit"
-          color="primary"
-          className="mt-3 w-100"
-        >
-          Log in
-        </Button>)}
+        ) : (
+          <Button type="submit" color="primary" className="mt-3 w-100">
+            Log in
+          </Button>
+        )}
       </Form.Group>
 
       <Divider className="mt-4">or log in with</Divider>
 
-      <SocialAuthButtons loginLoading={loginLoading} setLoginLoading={handleLoginLoading} />
+      <SocialAuthButtons loginLoading={loginLoading} setLoginLoading={handleLoginLoading} heading={heading} handleFirebaseError={handleFirebaseError} />
     </Form>
   );
 };
+
 export default LoginForm;
