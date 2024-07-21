@@ -9,3 +9,9 @@ button .spinner-border {
   margin-right: 0.5rem; /* Adjust spacing between spinner and text */
 }
 
+.chat-editor-area .ql-container.ql-snow,
+.chat-editor-area .ql-container.ql-bubble {
+  max-height: 100px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}

@@ -29,7 +29,7 @@ const ChatThread = ({ thread, index }) => {
           </Flex>
           <div className="min-w-0">
             <div className="chat-contact-content pe-3">
-              <LastMessage lastMessage={lastMessage}/>
+              <LastMessage lastMessage={lastMessage} />
             </div>
           </div>
         </div>

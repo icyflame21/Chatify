@@ -43,7 +43,7 @@ const Message = ({ message }) => {
                   value={message.message}
                   readOnly
                   preserveWhitespace
-                  className={`w-100 border-start border-start-3 p-0 m-0 ${isLeft ? "border-success" : "border-info"} shadow-sm`}
+                  className={`w-100  p-0 m-0 ${isLeft ? "border-success border-end border-end-3" : "border-info border-start border-start-3"} shadow-sm`}
                   modules={{ toolbar: false }}
                 />
               )}

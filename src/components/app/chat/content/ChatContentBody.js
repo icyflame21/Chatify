@@ -26,7 +26,7 @@ const ChatContentBody = ({ thread }) => {
       <ThreadInfo thread={thread} />
       <SimpleBarReact style={{ height: '100%' }}>
         <div className="chat-content-scroll-area">
-          <ChatContentBodyIntro thread={thread} />
+          {/* <ChatContentBodyIntro thread={thread} /> */}
           {chatMessages.loading ? (
             <Row className="g-0 w-100 h-100">
               <Col xs={12} className='d-flex align-items-center justify-content-center' style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}>
@@ -36,7 +36,7 @@ const ChatContentBody = ({ thread }) => {
           ) : (
             chatMessages.data && Object.keys(chatMessages.data).map((element) => (
               <div key={element}>
-                <div className="text-center fs--2 text-500">{element}</div>
+                <div className="text-center fs--2 text-500 pt-3">{element}</div>
                 {chatMessages.data[element].map((message, index) => (
                   <Message
                     key={`${message.createdAt}_${index}`}

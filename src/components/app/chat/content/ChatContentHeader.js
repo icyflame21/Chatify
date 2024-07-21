@@ -3,9 +3,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Col, Row, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import Flex from 'components/common/Flex';
 import { ChatContext } from 'context/ChatProvider';
+import Avatar from 'components/common/Avatar';
 
 const ChatContentHeader = ({ thread }) => {
-  const { isOpenThreadInfo, handleOpenThreadInfo, handleHideSideBar } = useContext(ChatContext);
+  const { getUser, isOpenThreadInfo, handleOpenThreadInfo, handleHideSideBar } = useContext(ChatContext);
+  const user = getUser(thread);
 
   return (
     <div className="chat-content-header">
@@ -17,11 +19,20 @@ const ChatContentHeader = ({ thread }) => {
           >
             <FontAwesomeIcon icon="chevron-left" />
           </div>
+
           <div className="min-w-0">
-            <h5 className="mb-0 text-truncate fs-0">{thread?.chat_group_options?.group_name}</h5>
-            <div className="fs--2 text-400">
-              Active on  chat
-            </div>
+            <Flex
+              alignItems="center"
+              className='gap-2'
+            >
+              <Avatar className="status-online" size="xl" src={user.avatarSrc} />
+              <div>
+                <h5 className="mb-0 text-truncate fs-0">{thread?.chat_group_options?.group_name}</h5>
+                <div className="fs--2 text-400">
+                  Active on  chat
+                </div>
+              </div>
+            </Flex>
           </div>
         </Col>
         <Col xs="auto">

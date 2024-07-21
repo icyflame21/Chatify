@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Button, Collapse } from 'react-bootstrap';
+import { Button, Collapse, Dropdown, Nav } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Avatar from 'components/common/Avatar';
 import Flex from 'components/common/Flex';
@@ -7,6 +7,7 @@ import classNames from 'classnames';
 import SimpleBarReact from 'simplebar-react';
 import { ChatContext } from 'context/ChatProvider';
 import DefaultProfile from 'assets/img/avatar.png'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const ThreadInfo = ({ thread }) => {
   const [isOpenMemberCollapse, setIsOpenMemberCollapse] = useState(true);
@@ -39,9 +40,34 @@ const ThreadInfo = ({ thread }) => {
                   {thread?.chat_group_options?.group_name}
                 </Link>
               </h6>
+              <Dropdown className="z-index-1">
+                <Dropdown.Toggle
+                  id="dropdown-button"
+                  className="text-400 dropdown-caret-none me-n3"
+                  variant="link"
+                  size="sm"
+                >
+                  <FontAwesomeIcon icon="cog" />
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu className="py-2 border">
+                  <Dropdown.Item className="cursor-pointer">Mute</Dropdown.Item>
+                  <Dropdown.Divider />
+                  <Dropdown.Item className="cursor-pointer">
+                    Archive
+                  </Dropdown.Item>
+                  <Dropdown.Item className="cursor-pointer text-danger">
+                    Delete
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
             </Flex>
           </Flex>
-
+          <div className="px-3">
+            <Nav className="flex-column fs--2 font-sans-serif fw-medium">
+              {thread?.chat_group_options?.group_heading}
+            </Nav>
+          </div>
           <hr className="my-2" />
           <div className="px-3">
             <div className="title">

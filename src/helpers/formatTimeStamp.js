@@ -5,10 +5,10 @@ import en from 'javascript-time-ago/locale/en'
 
 export const formatTimestamp = (timestamp) => {
   if (timestamp) {
-    TimeAgo.addDefaultLocale(en)
+    TimeAgo.addLocale(en)
     const timeAgo = new TimeAgo('en-US')
     const date = timestamp.toDate()
-    return timeAgo.format(date)
+    return timeAgo.format(date, 'twitter')
   }
 };
 

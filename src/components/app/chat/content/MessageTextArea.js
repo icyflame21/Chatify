@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classNames from 'classnames';
 import Picker from '@emoji-mart/react';
-import { Button, Form, Spinner } from 'react-bootstrap';
+import { Button, Form } from 'react-bootstrap';
 import AppContext from 'context/Context';
 import { ChatContext } from 'context/ChatProvider';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
@@ -12,6 +12,7 @@ import { showToast } from 'helpers/toast';
 import { getAdminDoc } from 'helpers/query';
 import 'react-quill/dist/quill.snow.css';
 import ReactQuill from 'react-quill';
+import { IoMdSend } from "react-icons/io";
 
 const MessageTextArea = () => {
   const { handleScrollToBottom, isOpenThreadInfo, isSending, handleIsSending } = useContext(ChatContext);
@@ -29,9 +30,11 @@ const MessageTextArea = () => {
     setPreviewEmoji(false);
   };
 
+  const messageText = quillRef?.current?.getEditor()?.getText()?.trim();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!message.trim()) return;
+    if (!messageText) return;
 
     handleIsSending(true);
 
@@ -41,7 +44,7 @@ const MessageTextArea = () => {
 
       if (!getAdmin?.chat_group_options?.isLogout) {
         await addDoc(collection(firestore, token_id), {
-          message,
+          message: messageText,
           createdAt: serverTimestamp(),
           createdBy: userInfo?.userName,
           sender_uid: userInfo?.uid,
@@ -84,7 +87,7 @@ const MessageTextArea = () => {
       />
       <Button
         variant="link"
-        className="emoji-icon"
+        className="emoji-icon fs-1"
         onClick={() => setPreviewEmoji((prev) => !prev)}
       >
         <FontAwesomeIcon icon={['far', 'laugh-beam']} />
@@ -102,18 +105,11 @@ const MessageTextArea = () => {
       )}
       <Button
         variant="send"
-        disabled={isSending}
-        className={classNames('shadow-none', { 'text-primary': message.length > 0 })}
+        disabled={isSending || !messageText?.trim()}
+        className={classNames('shadow-none', { 'text-success': messageText && messageText?.trim()?.length > 0 })}
         type="submit"
       >
-        {isSending ? (
-          <div className="d-inline-flex align-items-center">
-            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
-            <span>Sending...</span>
-          </div>
-        ) : (
-          'Send'
-        )}
+        <IoMdSend className='fs-2' />
       </Button>
     </Form>
   );
