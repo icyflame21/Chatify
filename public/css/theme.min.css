@@ -20079,6 +20079,9 @@ h5 {
 .border-start-2 {
   border-left-width: 2px !important;
 }
+.border-start-3 {
+  border-left-width: 3px !important;
+}
 .container,
 .container-fluid,
 .container-lg,

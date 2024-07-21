@@ -2,8 +2,9 @@ import React from 'react';
 import Avatar from 'components/common/Avatar';
 import Flex from 'components/common/Flex';
 import classNames from 'classnames';
-// import ChatMessageOptions from './ChatMessageOptions';
+import ChatMessageOptions from './ChatMessageOptions';
 import DefaultProfile from 'assets/img/avatar.png'
+import ReactQuill from 'react-quill';
 
 const Message = ({ message }) => {
   const isLeft = message.createdBy !== "You";
@@ -28,20 +29,22 @@ const Message = ({ message }) => {
               'align-items-center': isLeft
             })}
           >
-            {/* {!isLeft && <ChatMessageOptions />} */}
+            {!isLeft && <ChatMessageOptions />}
 
             <div
-              className={classNames('p-2 rounded-2 chat-message', {
-                'bg-200': isLeft,
-                'bg-primary text-white light': !isLeft
+              className={classNames('chat-message', {
+                'bg-soft-success text-dark': isLeft,
+                'bg-soft-info text-dark': !isLeft
               })}
             >
               {(message.message) && (
-                <p
-                  className="mb-0"
-                  dangerouslySetInnerHTML={{
-                    __html: JSON.parse(JSON.stringify(message.message))
-                  }}
+                <ReactQuill
+                  theme="bubble"
+                  value={message.message}
+                  readOnly
+                  preserveWhitespace
+                  className={`w-100 border-start border-start-3 p-0 m-0 ${isLeft ? "border-success" : "border-info"} shadow-sm`}
+                  modules={{ toolbar: false }}
                 />
               )}
 

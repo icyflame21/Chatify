@@ -1,25 +1,14 @@
 import moment from 'moment';
 import 'moment-timezone';
+import TimeAgo from 'javascript-time-ago'
+import en from 'javascript-time-ago/locale/en'
 
 export const formatTimestamp = (timestamp) => {
   if (timestamp) {
-    const now = new Date();
-    const messageDate = timestamp.toDate();
-    const diffInMs = now - messageDate;
-    const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    const diffInDays = Math.floor(diffInHours / 24);
-
-    if (diffInDays === 0) {
-      if (diffInHours === 0) {
-        if (diffInMinutes === 0) {
-          return 'Just now';
-        }
-        return `${diffInMinutes} min${diffInMinutes > 1 ? 's' : ''} ago`;
-      }
-      return `${diffInHours} hr${diffInHours > 1 ? 's' : ''} ago`;
-    }
-    return messageDate.toLocaleDateString();
+    TimeAgo.addDefaultLocale(en)
+    const timeAgo = new TimeAgo('en-US')
+    const date = timestamp.toDate()
+    return timeAgo.format(date)
   }
 };
 
@@ -54,7 +43,7 @@ export const formatDate = (date, timezone) => {
 }
 
 export const convertTimestampToDate = (data) => {
-  if (data && data?.seconds && data?.nanoseconds) {
-    return new Date(data?.seconds * 1000 + data?.nanoseconds / 1000000);
+  if (data) {
+    return data?.toDate().toDateString()
   }
 }

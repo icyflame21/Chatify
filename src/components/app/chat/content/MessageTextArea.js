@@ -1,7 +1,7 @@
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classNames from 'classnames';
 import Picker from '@emoji-mart/react';
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Button, Form, Spinner } from 'react-bootstrap';
 import AppContext from 'context/Context';
 import { ChatContext } from 'context/ChatProvider';
@@ -22,7 +22,10 @@ const MessageTextArea = () => {
 
   const addEmoji = (e) => {
     let emoji = e.native;
-    setMessage((prevMessage) => prevMessage + emoji);
+    const quill = quillRef.current.getEditor();
+    const cursorPosition = quill.getSelection()?.index || 0;
+    quill.insertText(cursorPosition, emoji, 'user');
+    quill.setSelection(cursorPosition + emoji.length, 0);
     setPreviewEmoji(false);
   };
 
@@ -71,11 +74,11 @@ const MessageTextArea = () => {
     <Form className="chat-editor-area" onSubmit={handleSubmit}>
       <ReactQuill
         ref={quillRef}
-        theme="snow"
+        theme="bubble"
         value={message}
         onChange={setMessage}
         placeholder="Type your message"
-        className='w-100  outline-none'
+        className='w-100 border border-1'
         modules={{ toolbar: false }}
         bounds='.chat-editor-area'
       />

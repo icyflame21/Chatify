@@ -7,7 +7,7 @@ const LastMessage = ({ lastMessage }) => {
       <div
         className="chat-contact-content"
       >
-        {`${lastMessage?.createdBy}: ${lastMassagePreview}`}
+        {`${lastMessage?.createdBy}: ${lastMassagePreview[0]}`}
       </div>
     );
   }
