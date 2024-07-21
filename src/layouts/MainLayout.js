@@ -12,7 +12,7 @@ const MainLayout = () => {
       const id = hash.replace('#', '');
       const element = document.getElementById(id);
       if (element) {
-        element.scrollIntoView({ block: 'start', behavior: 'smooth' });
+        element?.scrollIntoView({ block: 'start', behavior: 'smooth' });
       }
     }
   }, []);

@@ -9,20 +9,27 @@ import { Col, Row, Spinner } from 'react-bootstrap';
 
 const ChatContentBody = ({ thread }) => {
   const messagesEndRef = useRef();
+  const prevChatMessagesRef = useRef();
 
   const { scrollToBottom, handleScrollToBottom, chatMessages } = useContext(ChatContext);
 
   useEffect(() => {
-    if (scrollToBottom) {
+    const prevChatMessages = prevChatMessagesRef.current;
+
+    const chatMessagesChanged = JSON.stringify(prevChatMessages) !== JSON.stringify(chatMessages);
+
+    if (scrollToBottom || chatMessagesChanged) {
       setTimeout(() => {
-        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
       }, 500);
       handleScrollToBottom(false);
     }
-  }, [scrollToBottom]);
+
+    prevChatMessagesRef.current = chatMessages;
+  }, [chatMessages, scrollToBottom]);
 
   return (
-    <div className="chat-content-body" style={{ display: 'inherit' }}>
+    <div className="chat-content-body" style={{ display: 'inherit' }} >
       <ThreadInfo thread={thread} />
       <SimpleBarReact style={{ height: '100%' }}>
         <div className="chat-content-scroll-area">
@@ -43,9 +50,9 @@ const ChatContentBody = ({ thread }) => {
                     message={message}
                   />
                 ))}
-
               </div>
-            )))}
+            )))
+          }
         </div>
         <div ref={messagesEndRef} />
       </SimpleBarReact>

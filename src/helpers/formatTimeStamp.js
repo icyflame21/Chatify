@@ -8,7 +8,7 @@ export const formatTimestamp = (timestamp) => {
     TimeAgo.addLocale(en)
     const timeAgo = new TimeAgo('en-US')
     const date = timestamp.toDate()
-    return timeAgo.format(date, 'twitter')
+    return timeAgo.format(date)
   }
 };
 

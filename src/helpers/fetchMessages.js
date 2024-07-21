@@ -43,13 +43,14 @@ const useFetchMessages = () => {
 
             const formattedMessage = {
                 ...data,
+                id: doc.id,
                 createdAt: formatTimestamp(data.createdAt),
                 createdBy: data.sender_uid === userInfo.uid ? 'You' : data.createdBy,
             };
 
             messagesByDate[dateKey].push(formattedMessage);
         });
-     
+
         return messagesByDate;
     };
 

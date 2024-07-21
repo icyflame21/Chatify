@@ -7,12 +7,15 @@ import { ChatContext } from 'context/ChatProvider';
 import { getAdminDoc } from 'helpers/query';
 import useFetchMessages from 'helpers/fetchMessages';
 import AppContext from 'context/Context';
+import useAuth from 'helpers/useAuth';
 
 const ChatTab = () => {
   const fetchMessages = useFetchMessages();
-  const { userInfo } = useContext(AppContext);
+  const { handleUserInfo, userInfo } = useContext(AppContext);
   const { handleHideSideBar, handleScrollToBottom,handleChatHistory } = useContext(ChatContext);
-  
+
+  const fetchAuthInfo = useAuth(handleUserInfo);
+
   useEffect(() => {
     if (userInfo?.chat_group_options?.token_id) {
       const fetchChatHistory = async () => {
@@ -22,6 +25,7 @@ const ChatTab = () => {
             data: [result]
           });
           fetchMessages()
+          fetchAuthInfo()
         } catch (error) {
           console.error('Failed to fetch chat history:', error);
         } finally {

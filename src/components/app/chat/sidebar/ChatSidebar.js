@@ -10,7 +10,9 @@ const ChatSidebar = () => {
 
   return (
     <div className={classNames('chat-sidebar', { 'start-0': hideSidebar })}>
-      <div className="contacts-list">
+      <div className="contacts-list" style={{
+        backgroundColor: "#f5f5f5"
+      }}>
         <SimpleBarReact style={{ height: '100%', minWidth: '65px' }}>
           <Nav className="border-0">
             {chatHistory.loading ? (

@@ -24,7 +24,7 @@ const LoginForm = () => {
       const response = await axios.get(process.env.REACT_APP_RANDOM_PROFILE_HEADING_URL);
       setHeading(response.data.content);
     } catch (error) {
-      showToast('Failed to fetch heading', 'danger');
+      console.log('Failed to fetch heading', error);
     }
   };
 
